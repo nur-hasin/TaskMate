@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "task-manager-native",
+    "name": "TaskMate",
     "slug": "task-manager-native",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,16 +8,20 @@
     "scheme": "taskmanagernative",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "scheme": "taskmanagernative",
+      "icon": "./assets/images/icon.png",
+      "bundleIdentifier": "com.anonymous.taskmanagernative"
     },
     "android": {
+      "scheme": "taskmanagernative",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundColor": "#FFF0DF",
         "backgroundImage": "./assets/images/android-icon-background.png",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.taskmanagernative"
     },
     "web": {
       "output": "static",
@@ -28,11 +32,21 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#FFF0DF",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 200
         }
-      ]
+      ],
+      "expo-sqlite",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "enableSceneSupport": true
+          }
+        }
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
