@@ -5,8 +5,14 @@ import {
 } from './authStorage';
 
 const API_BASE_URL = (
-  process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000/api'
-).replace(/\/$/, '');
+  __DEV__
+    ? process.env.EXPO_PUBLIC_LOCAL_API_URL
+    : process.env.EXPO_PUBLIC_PRODUCTION_API_URL
+)?.replace(/\/$/, '');
+
+if (!API_BASE_URL) {
+  throw new Error('API URL is not configured for this environment.');
+}
 
 async function apiRequest(path, options = {}) {
   const { method = 'GET', body, auth = true } = options;
