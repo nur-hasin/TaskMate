@@ -30,10 +30,6 @@ export function AuthProvider({ children }) {
           await clearAccessToken().catch(() => { });
         }
       } finally {
-        if (__DEV__) {
-          await new Promise(resolve => setTimeout(resolve, 30000));
-        }
-
         if (!cancelled) {
           setIsLoading(false);
         }

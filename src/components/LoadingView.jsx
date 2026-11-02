@@ -1,14 +1,33 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+
 import COLORS from '../theme/colors';
 
-export default function LoadingView({ message = 'Getting things ready…' }) {
+export default function LoadingView({
+  message = 'Getting things ready…',
+}) {
   return (
     <View style={styles.container}>
-      <View style={styles.brandMark}>
-        <Text style={styles.brandMarkText}>✓</Text>
-      </View>
+      <Image
+        source={require('../../assets/images/android-icon-foreground.png')}
+        style={styles.logo}
+        resizeMode="contain"
+        accessibilityLabel="TaskMate logo"
+      />
+
       <Text style={styles.brandName}>TaskMate</Text>
-      <ActivityIndicator color={COLORS.primary} style={styles.spinner} />
+
+      <ActivityIndicator
+        color={COLORS.primary}
+        size="large"
+        style={styles.loader}
+      />
+
       <Text style={styles.message}>{message}</Text>
     </View>
   );
@@ -21,32 +40,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  brandMark: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: COLORS.blushPink,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandMarkText: {
-    color: COLORS.primary,
-    fontSize: 26,
-    fontWeight: '800',
+  logo: {
+    width: 180,
+    height: 180,
   },
   brandName: {
-    fontSize: 14,
+    marginTop: 6,
+    fontSize: 22,
+    lineHeight: 28,
     fontWeight: '900',
-    letterSpacing: 2.4,
+    letterSpacing: 2,
     color: COLORS.text,
-    marginTop: 10,
   },
-  spinner: {
-    marginTop: 22,
-    marginBottom: 10,
+  loader: {
+    marginTop: 32,
+    marginBottom: 12,
   },
   message: {
     color: COLORS.textSecondary,
-    fontSize: 12,
+    fontSize: 14,
+    lineHeight: 20,
   },
 });
