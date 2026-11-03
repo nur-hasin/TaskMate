@@ -10,7 +10,10 @@
     "ios": {
       "scheme": "taskmanagernative",
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.anonymous.taskmanagernative"
+      "bundleIdentifier": "com.anonymous.taskmanagernative",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "scheme": "taskmanagernative",
