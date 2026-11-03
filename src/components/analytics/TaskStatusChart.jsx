@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Animated,
   Easing,
@@ -21,22 +21,18 @@ const RING_WIDTH = OUTER_RADIUS - INNER_RADIUS;
 const CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 function AnimatedDonut({ data, total, isActive }) {
-  const progressValues = useRef({});
-
-  data.forEach((item) => {
-    if (!progressValues.current[item.label]) {
-      progressValues.current[item.label] = new Animated.Value(0);
-    }
-  });
+  const [progressValues] = useState(() => ({
+    'To do': new Animated.Value(0),
+    'Saved for later': new Animated.Value(0),
+    Completed: new Animated.Value(0),
+  }));
 
   const dataSignature = data
     .map((item) => `${item.label}:${item.value}`)
     .join('|');
 
   useEffect(() => {
-    const values = data.map(
-      (item) => progressValues.current[item.label]
-    );
+    const values = Object.values(progressValues);
 
     values.forEach((value) => {
       value.stopAnimation();
@@ -60,17 +56,24 @@ function AnimatedDonut({ data, total, isActive }) {
     animation.start();
 
     return () => animation.stop();
-  }, [isActive, dataSignature, total]);
+  }, [isActive, dataSignature, total, progressValues]);
 
-  let currentAngle = -90;
+  const slices = data.map((item, index) => {
+    const precedingValue = data
+      .slice(0, index)
+      .reduce((sum, previous) => sum + previous.value, 0);
 
-  const slices = data.map((item) => {
-    const startAngle = currentAngle;
-    const arcLength = (item.value / total) * CIRCUMFERENCE;
+    const startAngle =
+      total > 0
+        ? -90 + (precedingValue / total) * 360
+        : -90;
 
-    currentAngle += (item.value / total) * 360;
+    const arcLength =
+      total > 0
+        ? (item.value / total) * CIRCUMFERENCE
+        : 0;
 
-    const progress = progressValues.current[item.label];
+    const progress = progressValues[item.label];
 
     const dashOffset = progress.interpolate({
       inputRange: [0, 1],
@@ -92,7 +95,6 @@ function AnimatedDonut({ data, total, isActive }) {
         height={SIZE}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
       >
-        {/* Subtle ring visible underneath while arcs are drawing. */}
         <Circle
           cx={CENTER}
           cy={CENTER}
@@ -119,8 +121,6 @@ function AnimatedDonut({ data, total, isActive }) {
           />
         ))}
       </Svg>
-
-      {/* The center remains stationary while the colored arcs draw. */}
       <View pointerEvents="none" style={styles.donutCenter}>
         <Text style={styles.donutTotal}>{total}</Text>
         <Text style={styles.donutCaption}>Tasks</Text>
@@ -128,6 +128,7 @@ function AnimatedDonut({ data, total, isActive }) {
     </View>
   );
 }
+
 
 export default function TaskStatusChart({
   todoCount = 0,

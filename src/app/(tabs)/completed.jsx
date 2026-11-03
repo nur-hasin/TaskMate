@@ -1,4 +1,3 @@
-import { CheckCheck } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import {
     ScrollView,

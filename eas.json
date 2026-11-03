@@ -13,6 +13,14 @@
       "ios": {
         "simulator": true
       }
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "preview",
+      "ios": {
+        "simulator": true
+      }
     }
   }
 }

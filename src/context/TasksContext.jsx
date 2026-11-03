@@ -50,10 +50,10 @@ export function TasksProvider({ children }) {
   const [error, setError] = useState(null);
 
   const refreshTasks = useCallback(async () => {
-    setError(null);
-
     try {
       const data = await apiGetTasks();
+
+      setError(null);
 
       animateTaskLayout();
       setTasks(data);
@@ -68,8 +68,31 @@ export function TasksProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    void refreshTasks();
-  }, [refreshTasks]);
+    let cancelled = false;
+
+    apiGetTasks()
+      .then((data) => {
+        if (cancelled) return;
+
+        setError(null);
+        animateTaskLayout();
+        setTasks(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err.message || 'Could not load tasks.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function createTask(payload) {
     const newTask = await apiCreateTask(payload);
@@ -83,15 +106,15 @@ export function TasksProvider({ children }) {
     return updated;
   }
 
-async function toggleTask(task) {
-  return updateTask(task.id, {
-    title: task.title,
-    description: task.description || '',
-    priority: task.priority || 'Medium',
-    dueDate: task.dueDate || '',
-    completed: !task.completed,
-  });
-}
+  async function toggleTask(task) {
+    return updateTask(task.id, {
+      title: task.title,
+      description: task.description || '',
+      priority: task.priority || 'Medium',
+      dueDate: task.dueDate || '',
+      completed: !task.completed,
+    });
+  }
 
   async function toggleSavedForLater(task) {
     if (task.completed) {

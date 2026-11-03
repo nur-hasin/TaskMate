@@ -1,17 +1,86 @@
-
 import { Redirect, Tabs } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Animated, Platform, Pressable } from 'react-native';
+
 import {
   ChartNoAxesCombined,
   CheckCheck,
   ListTodo,
   UserRound,
 } from 'lucide-react-native';
-import { Platform } from 'react-native';
 
 import LoadingView from '../../components/LoadingView';
 import { useAuth } from '../../context/AuthContext';
 import { TasksProvider } from '../../context/TasksContext';
 import COLORS from '../../theme/colors';
+
+function AnimatedTabIcon({ Icon, color, focused }) {
+  const [scale] = useState(
+    () => new Animated.Value(focused ? 1.13 : 1)
+  );
+
+  const [translateY] = useState(
+    () => new Animated.Value(focused ? -2 : 0)
+  );
+
+  useEffect(() => {
+    const animation = Animated.parallel([
+      Animated.spring(scale, {
+        toValue: focused ? 1.13 : 1,
+        damping: 13,
+        stiffness: 180,
+        mass: 0.7,
+        useNativeDriver: true,
+      }),
+
+      Animated.spring(translateY, {
+        toValue: focused ? -2 : 0,
+        damping: 13,
+        stiffness: 180,
+        mass: 0.7,
+        useNativeDriver: true,
+      }),
+    ]);
+
+    animation.start();
+
+    return () => animation.stop();
+  }, [focused, scale, translateY]);
+
+  return (
+    <Animated.View
+      style={{
+        transform: [
+          { translateY },
+          { scale },
+        ],
+      }}
+    >
+      <Icon
+        color={color}
+        size={23}
+        strokeWidth={focused ? 2.6 : 2}
+      />
+    </Animated.View>
+  );
+}
+
+
+function NoFeedbackTabButton({ style, ...props }) {
+  const staticStyle =
+    typeof style === 'function'
+      ? style({ pressed: false })
+      : style;
+
+  return (
+    <Pressable
+      {...props}
+      style={staticStyle}
+      android_ripple={null}
+      android_disableSound
+    />
+  );
+}
 
 export default function TabsLayout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -29,8 +98,14 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
+
           tabBarActiveTintColor: COLORS.primary,
           tabBarInactiveTintColor: COLORS.textSecondary,
+
+          tabBarButton: (props) => (
+            <NoFeedbackTabButton {...props} />
+          ),
+
           tabBarStyle: {
             backgroundColor: COLORS.surface,
             borderTopColor: COLORS.border,
@@ -39,6 +114,7 @@ export default function TabsLayout() {
             paddingBottom: Platform.OS === 'ios' ? 20 : 8,
             height: Platform.OS === 'ios' ? 80 : 60,
           },
+
           tabBarLabelStyle: {
             fontSize: 10,
             fontWeight: '700',
@@ -50,10 +126,10 @@ export default function TabsLayout() {
           options={{
             title: 'Tasks',
             tabBarIcon: ({ color, focused }) => (
-              <ListTodo
+              <AnimatedTabIcon
+                Icon={ListTodo}
                 color={color}
-                size={23}
-                strokeWidth={focused ? 2.5 : 2}
+                focused={focused}
               />
             ),
           }}
@@ -64,10 +140,10 @@ export default function TabsLayout() {
           options={{
             title: 'Completed',
             tabBarIcon: ({ color, focused }) => (
-              <CheckCheck
+              <AnimatedTabIcon
+                Icon={CheckCheck}
                 color={color}
-                size={23}
-                strokeWidth={focused ? 2.5 : 2}
+                focused={focused}
               />
             ),
           }}
@@ -78,10 +154,10 @@ export default function TabsLayout() {
           options={{
             title: 'Analytics',
             tabBarIcon: ({ color, focused }) => (
-              <ChartNoAxesCombined
+              <AnimatedTabIcon
+                Icon={ChartNoAxesCombined}
                 color={color}
-                size={23}
-                strokeWidth={focused ? 2.5 : 2}
+                focused={focused}
               />
             ),
           }}
@@ -92,10 +168,10 @@ export default function TabsLayout() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, focused }) => (
-              <UserRound
+              <AnimatedTabIcon
+                Icon={UserRound}
                 color={color}
-                size={23}
-                strokeWidth={focused ? 2.5 : 2}
+                focused={focused}
               />
             ),
           }}
